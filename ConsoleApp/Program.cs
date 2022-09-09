@@ -1,7 +1,3 @@
-﻿using FunctionalProgrammingPlayground.Options;
+﻿using FunctionalProgrammingPlayground.CoreFunctions.Map;
 
-var result = LanguageExtOption.Run();
-foreach (var greeting in result)
-{
-    Console.WriteLine(greeting);
-}
+LanguageExtMap.Run();
