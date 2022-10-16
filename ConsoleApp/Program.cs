@@ -1,3 +1,3 @@
-﻿using FunctionalProgrammingPlayground.CoreFunctions.Map;
+﻿using FunctionalProgrammingPlayground.CoreFunctions.Bind;
 
-LanguageExtMap.Run();
+LaYumbaBind.Run();
