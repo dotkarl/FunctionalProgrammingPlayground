@@ -1,3 +1,3 @@
-﻿using FunctionalProgrammingPlayground.CoreFunctions.Bind;
+﻿using FunctionalProgrammingPlayground.Either;
 
-LaYumbaBind.Run();
+LaYumbaEither.Run();
