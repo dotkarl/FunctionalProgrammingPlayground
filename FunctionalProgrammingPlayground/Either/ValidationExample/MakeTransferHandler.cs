@@ -1,19 +1,14 @@
 ﻿using LaYumba.Functional;
-using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
-using Unit = System.ValueType;
+using Unit = System.ValueTuple;
 using static LaYumba.Functional.F;
 
 namespace FunctionalProgrammingPlayground.Either.ValidationExample;
-public class MakeTransferController : ControllerBase
+internal class MakeTransferHandler
 {
-    [HttpPost, Route("transfers/book")]
-    public void MakeTransfer([FromBody] MakeTransfer request) => 
-        Handle(request);
-
-    Either<Error, Unit> Handle(MakeTransfer cmd) =>
-        Validate(cmd)
-        .Bind(Save);
+    public Either<Error, Unit> Handle(MakeTransfer cmd) =>
+    Validate(cmd)
+    .Bind(Save);
 
     Either<Error, MakeTransfer> Validate(MakeTransfer cmd) =>
         Right(cmd)
@@ -35,4 +30,5 @@ public class MakeTransferController : ControllerBase
 
     Either<Error, Unit> Save(MakeTransfer cmd) =>
         default; //TODO
+
 }
