@@ -8,7 +8,7 @@ namespace FunctionalProgrammingPlayground.Either.ValidationExample;
 public class MakeTransferController : ControllerBase
 {
     [HttpPost, Route("transfers/book")]
-    public void MakeTranser([FromBody] MakeTransfer request) => 
+    public void MakeTransfer([FromBody] MakeTransfer request) => 
         Handle(request);
 
     Either<Error, Unit> Handle(MakeTransfer cmd) =>
