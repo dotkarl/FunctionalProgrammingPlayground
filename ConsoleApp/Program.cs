@@ -1,3 +1,3 @@
-﻿using FunctionalProgrammingPlayground.Either;
+﻿using FunctionalProgrammingPlayground.PartialApplication;
 
-LaYumbaEither.Run();
+Basics.Run();
