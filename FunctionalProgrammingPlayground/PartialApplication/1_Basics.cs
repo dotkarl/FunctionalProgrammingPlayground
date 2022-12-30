@@ -74,8 +74,6 @@ public class Basics
         // the greeting (= operation) is the first one.
         // The operation is likely to be decided sooner than the data.
     }
-
-
 }
 
 public static class FuncExtensions

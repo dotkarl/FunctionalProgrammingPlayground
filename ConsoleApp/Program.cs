@@ -1,3 +1,3 @@
-﻿using FunctionalProgrammingPlayground.PartialApplication;
+﻿using FunctionalProgrammingPlayground.MultiArgumentFunctions.Apply;
 
-Basics.Run();
+LaYumbaApply.Run();
