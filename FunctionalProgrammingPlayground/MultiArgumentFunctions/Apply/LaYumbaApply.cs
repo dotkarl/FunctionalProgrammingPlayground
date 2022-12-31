@@ -3,6 +3,7 @@ using FsCheck.Xunit;
 using LaYumba.Functional;
 using Xunit;
 using static LaYumba.Functional.F;
+using Double = LaYumba.Functional.Double;
 
 namespace FunctionalProgrammingPlayground.MultiArgumentFunctions.Apply;
 public class LaYumbaApply
@@ -62,6 +63,14 @@ public class LaYumbaApply
         var none2 = Some(multiply)
             .Apply(None)
             .Apply(Some(4));
+
+        // This is an example of how you could call al multi-argument function
+        // using the monadic associative law (see property-based tests below).
+        // It, however, is not recommended.
+        Option<int> MultiplicationWithBind(string strX, string strY) =>
+            Int.Parse(strX)
+                .Bind(x => Int.Parse(strY)
+                    .Bind<int, int>(y => multiply!(x)(y)));
     }
 
 
@@ -117,6 +126,34 @@ public class PropertyBasedTests
             .Apply(b);
         Assert.Equal(first, second);
     }
+
+    // Bind unwraps the value of a monad,
+    // Some (i.e. Return) lifts a value up to a monad.
+    // The net result of Bind and Return is the monad itself.
+    [Property(Arbitrary = new[] { typeof(ArbitraryOption) })]
+    public void RightIdentityHolds(Option<object> m) =>
+        Assert.Equal(m, m.Bind(Some));
+
+    // If you use Return to lift a t and then Bind a function f over the result,
+    // that should be equivalent to applying f to t.
+    Func<int, IEnumerable<int>> f = i => Range(0, 1);
+    [Property]
+    public void LeftIdentityHolds(int t) =>
+        Assert.Equal(f(t), List(t).Bind(f));
+
+    // The Left and Right Identity laws ensure that
+    // a monad has no side effects to either t or f.
+
+    // Associativity: (a + b) + c == a + (b + c)
+    // This also holds for monads: m.Bind(f).Bind(g)  ==  m.Bind(x => f(x).Bind(g))
+    // (or, symbolically: (m >>= f) >>= g == m >>= (x => f(x) >>= g)
+    Func<double, Option<double>> safeSqrt = d =>
+        d < 0 ? None : Some(Math.Sqrt(d));
+    [Property(Arbitrary = new[] { typeof(ArbitraryOption) })]
+    public void AssociativityHolds(Option<string> m) =>
+        Assert.Equal(
+            m.Bind(Double.Parse).Bind(safeSqrt),
+            m.Bind(x => Double.Parse(x).Bind(safeSqrt)));
 }
 
 static class ArbitraryOption

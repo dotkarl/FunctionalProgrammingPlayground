@@ -11,4 +11,4 @@ This raises the question: how do we integrate multi-argument functions in our wo
 
 - **The applicative approach.** This uses the core function `Apply` to an elevated type.
 
-- **The monadic approach.**
+- **The monadic approach.** This uses the associative law of monads to be able to apply n arguments using nested calls to the Bind function.
