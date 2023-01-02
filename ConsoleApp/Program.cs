@@ -1,3 +1,3 @@
-﻿using FunctionalProgrammingPlayground.MultiArgumentFunctions.Apply;
+﻿using FunctionalProgrammingPlayground.MultiArgumentFunctions.LINQ;
 
-LaYumbaApply.Run();
+LaYumbaLinq.Run();

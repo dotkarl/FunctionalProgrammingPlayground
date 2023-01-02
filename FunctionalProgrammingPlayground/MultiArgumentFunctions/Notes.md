@@ -11,4 +11,6 @@ This raises the question: how do we integrate multi-argument functions in our wo
 
 - **The applicative approach.** This uses the core function `Apply` to an elevated type.
 
-- **The monadic approach.** This uses the associative law of monads to be able to apply n arguments using nested calls to the Bind function.
+- **The monadic approach.** This uses the associative law of monads to be able to apply n arguments using nested calls to the Bind function. 
+
+  This approach is not very readable, though. You could use LINQ queries as syntactic sugar, whhich uses this method under the hood. In order to do so, you would have to provide implementations for at least `Select` (i.e. `Map`), `SelectMany` (i.e. `Bind`), and a ternary overload to `SelectMany`. Implementing a `Where` operation is also useful in most cases.
