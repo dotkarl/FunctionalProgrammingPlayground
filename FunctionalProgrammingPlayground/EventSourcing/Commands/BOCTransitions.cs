@@ -1,13 +1,7 @@
 ﻿using LaYumba.Functional;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using static LaYumba.Functional.F;
 
-namespace FunctionalProgrammingPlayground.EventSourcing;
+namespace FunctionalProgrammingPlayground.EventSourcing.Commands;
 public static class Account
 {
     // Create a new AccountState.
@@ -44,7 +38,7 @@ public static class Account
                 Some(otherEvents.Aggregate(
                     // Use the Created event as the seed, 
                     // this contains the AccountState in its original state.
-                    Create((CreatedAccount)created), 
+                    Create((CreatedAccount)created),
                     // Apply all other events to the AccountState.
                     (state, evt) => state.Apply(evt))));
     // This code shows the current state of the AccountState.
