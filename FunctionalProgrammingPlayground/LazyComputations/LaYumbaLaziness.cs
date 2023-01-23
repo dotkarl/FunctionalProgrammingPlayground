@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using static LaYumba.Functional.F;
 
 namespace FunctionalProgrammingPlayground.LazyComputations;
-public static class Laziness
+public static class LaYumbaLaziness
 {
     public static void Run()
     {
