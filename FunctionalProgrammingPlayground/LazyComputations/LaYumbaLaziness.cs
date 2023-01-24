@@ -1,9 +1,4 @@
 ﻿using LaYumba.Functional;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static LaYumba.Functional.F;
 
 namespace FunctionalProgrammingPlayground.LazyComputations;
@@ -16,7 +11,7 @@ public static class LaYumbaLaziness
         var rand = new Random();
         T PickWithValues<T>(T l, T r) => 
             rand.NextDouble() < 0.5 ? l : r;
-        PickWithValues(1 + 2, 3 + 4); // Returns either 3 or 7
+        PickWithValues(1 + 2, 3 + 4); // => either 3 or 7
 
         // C# evaluates both the first (1 + 2)
         // and the second computation (3 + 4) above,
@@ -44,7 +39,7 @@ public static class LaYumbaLaziness
         // pass the value lazily by wrapping it in a function
         // that computes the value.
 
-        // # Lazy APIs with Options
+        // ## Lazy APIs with Options
 
         // OrElse provides a fallback
         // in case the Option is None.
@@ -75,5 +70,85 @@ public static class LaYumbaLaziness
         // those arguments should be specified
         // as lazy computations.
 
+        // ## Funcs as functors
+
+        // A function can be composed as a functor.
+        
+        // As you recall, a functor is a wrapper
+        // that implements a Map function.
+        // The general signature of that function is
+        // Map: (C<T>, (T -> R)) -> C<R>.
+        
+        // Applied to a Func, this turns into:
+        // Map: (Func<T>, (T -> R)) -> Func<R>.
+
+        // An example:
+        var lazyGrandma = () => "grandma";
+        var turnBlue = (string s) => $"blue {s}";
+        var lazyGrandmaBlue = lazyGrandma.Map(turnBlue);
+        var grandmaBlue = lazyGrandmaBlue(); // => "blue grandma"
+        // The first three statements are not evaluated immediately,
+        // hence their characterisation as "lazy".
+        // They are only evaluated when the function is actually executed.
+
+        // This means that you can build up complex logic
+        // without executing anything until you decide to fire things off.
+
+        // ## Funcs as monads
+
+        // A function can also be composed as a monad.
+
+        // A monad is a wrapper that implements a Bind function:
+        // Bind: (C<T>, (T -> C<R>)) -> C<R>.
+
+        // Applied to a Func, this turns into:
+        // Bind: (Func<T>, T -> Func<R>)) -> Func<R>
+
+        // An example:
+        var turnGreen = (string s) => () => $"green {s}";
+        var lazyGrandmaGreen = lazyGrandma.Bind(turnGreen);
+        var grandmaGreen = lazyGrandmaGreen();
+
+        // This means that you can chain Funcs
+        // the same way you can chain any monad.
+
+        // # Exception handling with Try
+
+        // You can abstract the details of error handling away
+        // using lazy computations.
+
+        // An example:
+        Try<Uri> CreateUri(string uri) => () => new Uri(uri);
+        CreateUri("http://github.com").Run(); 
+        // => Success(http://github.com)
+        CreateUri("rubbish").Run(); 
+        // => Exception(Invalid URI: the format of the URI could not be...)
+
+        // Why does this work?
+
+        // Try is a delegate representing an operation
+        // that may throw an exception.
+
+        // A delegate is a type that represents references to methods
+        // with a particular parameter list and return type.
+        // When you instantiate a delegate,
+        // you can associate its instance with any method
+        // with a compatible signature and return type.
+        // You can invoke (or call) the method through the delegate instance.
+        // (source: https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/delegates/)
+
+        // Try accepts a T, which in this case is a Func<Uri>.
+        // Instantiating a new Uri may cause an Exception.
+        // Try catches that Exception, wrapping it in an Exceptional monad.
+        // So CreateUri returns a monad containing either a Uri, or the Exception.
+
+        // Run is an extension method on Try.
+        // It handles the try-catch block for you.
+        // By invoking a Func (qua T) via Try<T>'s Run extension,
+        // you won't have to worry about catching Exceptions anymore.
+
+        // There also exists a shorthand notation for Try:
+        Try(() => new Uri("http://google.com")).Run(); 
+        // => Success(http://google.com)
     }
 }

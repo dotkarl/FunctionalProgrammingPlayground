@@ -23,5 +23,15 @@ internal class LanguageExtLaziness
         // there is no need to wrap the second Option
         // in a Func. The right hand is only evaluated
         // when opt is None.
+
+        var result = Try(() => new Uri("http://google.com")).Match(
+            uri => uri.AbsoluteUri,
+            ex => ex.Message);
+        // LanguageExt's Try function does not
+        // specify a Run extension method.
+        // It does have a Match method, however,
+        // allowing you to specify how to deal
+        // with the Success object and
+        // the Exception in case of failure.
     }
 }
