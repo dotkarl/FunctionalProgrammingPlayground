@@ -1,3 +1,3 @@
 ﻿using FunctionalProgrammingPlayground.LazyComputations;
 
-LaYumbaLaziness.Run();
+ExceptionHandling.Run();
