@@ -1,4 +1,5 @@
 ﻿using LaYumba.Functional;
+using System.Text.Json;
 using static LaYumba.Functional.F;
 
 namespace FunctionalProgrammingPlayground.LazyComputations;
@@ -148,7 +149,51 @@ public static class LaYumbaLaziness
         // you won't have to worry about catching Exceptions anymore.
 
         // There also exists a shorthand notation for Try:
-        Try(() => new Uri("http://google.com")).Run(); 
+        Try(() => new Uri("http://google.com")).Run();
         // => Success(http://google.com)
+
+        // ## Example: extracting JSON safely
+
+        // Let's say, you have a piece of JSON:
+        var json = @"
+        {
+            ""Name"": ""github"",
+            ""Uri"": ""http://github.com""
+        }";
+
+        // This would be an unsafe way to construct a URI form that object:
+        Uri ExtractUriUnsafe(string json)
+        {
+            var website = JsonSerializer.Deserialize<Website>(json); // Could throw Exception
+            return new Uri(website.Uri); // Could throw Exception
+        }
+
+        // Let's use Try to make a safe implementation.
+        // We'll reuse the CreateUri funciton defined above.
+        Try<T> Parse<T>(string s) => () => JsonSerializer.Deserialize<T>(s);
+
+        // An implementation using Bind looks thus:
+        Try<Uri> ExtractUriSafeWithBind(string json) =>
+            Parse<Website>(json)
+                .Bind(website => CreateUri(website.Uri));
+
+        // An implementation using LINQ looks thus:
+        Try<Uri> ExtractUriSafeWithLINQ(string json) =>
+            from website in Parse<Website>(json)
+            from uri in CreateUri(website.Uri)
+            select uri;
+
+        // Try it out!
+        Console.WriteLine(ExtractUriSafeWithLINQ(json).Run());
+        Console.WriteLine(ExtractUriSafeWithLINQ("blah").Run());
+        Console.WriteLine(ExtractUriSafeWithLINQ("{}").Run());
+        Console.WriteLine(ExtractUriSafeWithLINQ(@"
+            {
+                ""Name"": ""Github"",
+                ""Uri"": ""rubbish""
+            }").Run());
+
     }
+
+    record Website(string Name, string Uri);
 }

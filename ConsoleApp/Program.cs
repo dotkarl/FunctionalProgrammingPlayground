@@ -1,3 +1,3 @@
-﻿using FunctionalProgrammingPlayground.MultiArgumentFunctions.LINQ;
+﻿using FunctionalProgrammingPlayground.LazyComputations;
 
-LaYumbaLinq.Run();
+LaYumbaLaziness.Run();
