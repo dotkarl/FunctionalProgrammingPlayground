@@ -2,9 +2,10 @@
 using FunctionalProgrammingPlayground.PartialApplication;
 using Microsoft.Extensions.Logging;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace FunctionalProgrammingPlayground.LazyComputations;
-public class Middleware
+public class MiddlewareExample
 {
     public static void Run()
     {
@@ -49,6 +50,11 @@ public class Middleware
         // On the way to, say, a database, you go through
         // some functions, and on the way out you do the same
         // in reverse order.
+
+        // The essence of a middleware function is that
+        // it takes a continuation (i.e. a callback function) of type T -> R,
+        // supplies a T to obtain an R, and returns an R.
+
     }
 }
 
@@ -61,4 +67,37 @@ public static class Instrumentation
         log.LogTrace($"Leaving {op}");
         return t;
     }
+}
+
+public class DbLogger
+{
+    Middleware<SqlConnection> Connect;
+
+    public DbLogger(ConnectionString connString)
+    {
+        Connect = f => ConnectionHelper.Connect(connString, f);
+    }
+
+    public void Log(string message) =>
+        (from conn in Connect   // Cannot find Select
+                                // Why does this work in the example in the book?
+        select conn.Execute("sp_create_log", message, CommandType.StoredProcedure))
+        .Run();
+}
+
+public delegate dynamic Middleware<T>(Func<T, dynamic> cont);
+
+public static class MiddlewareExt
+{
+
+    public static Middleware<R> Bind<T, R>(this Middleware<T> mw, Func<T, Middleware<R>> f) =>
+        cont =>
+        mw(t => f(t)(cont));
+
+    public static Middleware<R> Map<T, R>(this Middleware<T> mw, Func<T, R> f) =>
+        cont =>
+        mw(t => cont(f(t)));
+
+    public static T Run<T>(this Middleware<T> mw) =>
+        (T)mw(t => t);
 }

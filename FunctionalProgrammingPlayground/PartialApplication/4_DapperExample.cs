@@ -59,7 +59,7 @@ public static class ConnectionStringExt
 
 public static class ConnectionHelper
 {
-    public static R Connect<R>(ConnectionString connString, Func<IDbConnection, R> f)
+    public static R Connect<R>(ConnectionString connString, Func<SqlConnection, R> f)
     {
         using var conn = new SqlConnection(connString);
         conn.Open();
